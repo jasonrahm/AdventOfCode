@@ -1,5 +1,5 @@
 """
-2022 Advent of Code - Day 5
+2022 Advent of Code - Day 6
 """
 from aocd.models import Puzzle
 from collections import Counter, deque
