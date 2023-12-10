@@ -1,5 +1,8 @@
 """
 Advent of Code - Day 1
+
+Part 1 - solved
+Part 2 - attempted but unsolved by me, studied from another
 """
 
 

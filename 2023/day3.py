@@ -1,23 +1,26 @@
 """
 2022 Advent of Code - Day 3
+   Part 1 - working on test data but not puzzle data, towel thrown
+   Part 2 - unattempted
 """
-import re
+import operator
 from aocd.models import Puzzle
-
-
-def is_valid(row, col, grid_size):
-    return 0 <= row <= grid_size[0] and 0 <= col <= grid_size[1]
 
 
 def part1(data):
     # find symbols
+    neighbor_directions = [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)]
     symbols = []
     for row, line in enumerate(data):
         for col, c in enumerate(line):
             if not c.isdigit() and c != '.':
-
+                # find neighbors
+                neighbors = []
+                for test_coord in neighbor_directions:
+                    neighbor = tuple(map(operator.add, (row, col), test_coord))
+                    neighbors.append(neighbor)
                 # store coords
-                symbols.append((row, col))
+                symbols.append(((row, col), neighbors))
 
     # find numbers
     numbers = []
@@ -35,12 +38,19 @@ def part1(data):
                 numbers.append((int(number), [(row, c) for c in range(start, end)]))
                 start = None
                 number = ""
+        if start is not None:
+            numbers.append((int(number), [(row, c) for c in range(start, len(line))]))
 
-        # # Check for any pending number at the end of the row
-        # if start is not None:
-        #     numbers.append((int(number), [(row, c) for c in range(start, len(line))]))
-
-    return symbols, numbers
+    # Extract the coordinate lists from the tuples
+    valid_numbers = []
+    for symbol in symbols:
+        symbol_neighbors = set(symbol[1])
+        for number in numbers:
+            number_coords = set(number[1])
+            if number_coords.intersection(symbol_neighbors):
+                valid_numbers.append(number[0])
+    print(valid_numbers)
+    return sum(set(valid_numbers))
 
 
 # def part2(data):
@@ -51,7 +61,7 @@ if __name__ == '__main__':
     year, day = 2023, 3
     puzzle = Puzzle(year, day)
     # This line changes with the data, massage as necessary:
-    # puzzle_data = [x for x in puzzle.input_data.split('\n')]
+    puzzle_data = [x for x in puzzle.input_data.split('\n')]
     test_data = [
         "467..114..",
         "...*......",
@@ -65,34 +75,9 @@ if __name__ == '__main__':
         ".664.598.."
     ]
 
-    result1 = part1(test_data)
+    result1 = part1(puzzle_data)
     # result2 = part2(puzzle_data)
 
     print(f'{puzzle.title} Solutions:')
     print(f'\tPart 1: {result1}')
     # print(f'\tPart 2: {result2}')
-
-
-
-# def parse_data(grid_data):
-#     """Parse input."""
-#     numbers, symbols = [], {}
-#     parsing_number = False
-#     for row, line in enumerate(grid_data):
-#         for col, char in enumerate(line):
-#             if char == ".":
-#                 parsing_number = False
-#                 continue
-#             if not char.isdigit():
-#                 parsing_number = False
-#                 symbols[(col, row)] = char
-#             if char.isdigit() and not parsing_number:
-#                 number = ""
-#                 parsing_number = True
-#                 for digit in line[col:]:
-#                     if digit.isdigit():
-#                         number += digit
-#                     else:
-#                         break
-#                 numbers.append((int(number), neighbors(len(number), col, row)))
-#     return numbers, symbols
